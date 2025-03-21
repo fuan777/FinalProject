@@ -32,33 +32,51 @@
         .parking-message {
             position: absolute;
             background: white;
-            padding: 15px;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            padding: 12px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             z-index: 1000;
-            min-width: 120px;
+            min-width: 140px;
+            font-family: Arial, sans-serif;
+            border: 1px solid #eee;
+            margin-top: 8px;  /* 增加与目标元素的间距 */
         }
-        .parking-message:after {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: transparent transparent white transparent;
+        
+        /* 删除原箭头样式 */
+        
+        .parking-message p {
+            margin: 0 0 12px;
+            font-size: 15px;
+            font-weight: bold;
+            /* 移除原来的 color 定义 */
         }
+        
         .parking-message button {
             display: block;
             width: 100%;
-            margin: 5px 0;
-            padding: 6px 12px;
+            margin: 8px 0;
+            padding: 10px 12px;  /* 从8px调整为10px垂直内边距 */
             background: #f8f9fa;
             border: 1px solid #ddd;
-            border-radius: 3px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;  /* 从12px调整为13px */
         }
+        
         .parking-message button:hover {
             background: #e9ecef;
+            transform: translateY(-1px);
+        }
+        
+        .parking-message .park-btn {
+            color: #c2410c;
+            border-color: #fed7aa;
+        }
+        
+        .parking-message .find-btn {
+            color: #065f46;
+            border-color: #a7f3d0;
         }
     </style>
 {% endblock %}
@@ -69,6 +87,8 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="/static/js/finding.js"></script>
+    <script src="/static/js/parking.js"></script>
     <script>
         // 颜色映射表
         const colorMap = new Map([
@@ -77,6 +97,7 @@
             ['path',   '#CD5C5C'],
             ['free',   '#F7C58A'],
             ['occupy', '#F67E08'],
+            ['entry',  '#7BE537'],
         ]);
 
         // map0是从Django模板传入的90x200二维数组
@@ -95,50 +116,63 @@
                 const div = document.createElement('div');
                 div.className = 'grid-item';
                 div.style.backgroundColor = color;
-                // 悬停显示坐标
-                div.setAttribute('title', '(' + String(coord.x) + ',' + String(coord.y) + ')');
-                container.appendChild(div);
+                div.setAttribute('title', '(' + coord.x + ',' + coord.y + ')');
+                
+                // 修复事件绑定位置
+                if (colorPattern === 'occupy' || colorPattern === 'free') {
+                    div.dataset.x = coord.x;
+                    div.dataset.y = coord.y;
+                    div.addEventListener('click', function(e) {
+                        // 阻止事件冒泡
+                        e.stopPropagation();
+                        // 移除现有消息框
+                        document.querySelectorAll('.parking-message').forEach(m => m.remove());
+                        
+                        const msg = createParkingMessage(this.dataset.x, this.dataset.y);
+                        // 修复定位计算（添加滚动偏移）
+                        const rect = this.getBoundingClientRect();
+                        msg.style.top = `${rect.top + window.scrollY}px`;
+                        msg.style.left = `${rect.left + rect.width + 10 + window.scrollX}px`;
+                        document.body.appendChild(msg);
+
+                        // 按钮事件绑定
+                        // 修改按钮事件处理
+                        msg.querySelector('.park-btn').onclick = () => {
+                            parkingRequest(this.dataset.x, this.dataset.y);
+                            msg.remove();
+                        };
+                        msg.querySelector('.find-btn').onclick = () => {
+                            findingRequest(this.dataset.x, this.dataset.y);
+                            msg.remove();
+                        };
+                    });
+                }
+                
+                // 必须先将元素加入DOM再绑定事件
+                container.appendChild(div);  // 此句必须放在条件判断之后
 
                 coord.y += 1
             });
             coord.x += 1
             coord.y = 0
         });
-        // 修改后的创建函数
+
+        // 将createParkingMessage函数移至此处（避免重复定义）
+        // 修改消息框创建函数
         function createParkingMessage(x, y) {
+            const status = map0[x][y]; // 获取当前坐标状态
+            const statusText = status === 'occupy' ? '已占用' : '空闲'; // 状态翻译
+            const statusColor = status === 'occupy' ? '#dc2626' : '#16a34a'; // 状态颜色
+            
             const msg = document.createElement('div');
             msg.className = 'parking-message';
             msg.innerHTML = `
-                <p style="margin:0 0 10px;font-size:12px;">坐标 (${x}, ${y})</p>
+                <p style="margin:0 0 12px;color:${statusColor};">当前状态：${statusText}</p>
                 <button class="park-btn">停车</button>
                 <button class="find-btn">找车</button>
             `;
             return msg;
         }
 
-        div.addEventListener('click', function(e) {
-            // 移除现有消息框
-            document.querySelectorAll('.parking-message').forEach(m => m.remove());
-            
-            const msg = createParkingMessage(this.dataset.x, this.dataset.y);
-            // 定位到点击元素右侧
-            const rect = this.getBoundingClientRect();
-            msg.style.top = `${rect.top}px`;
-            msg.style.left = `${rect.left + rect.width + 10}px`;
-            document.body.appendChild(msg);
-            
-            // 点击外部关闭
-            setTimeout(() => {
-                const clickHandler = (e) => {
-                    if (!msg.contains(e.target)) {
-                        msg.remove();
-                        document.removeEventListener('click', clickHandler);
-                    }
-                };
-                document.addEventListener('click', clickHandler);
-            });
-            
-            // 按钮事件保持原逻辑...
-        });
     </script>
 {% endblock %}

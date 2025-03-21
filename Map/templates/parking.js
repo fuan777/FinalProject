@@ -1,3 +1,0 @@
-function parking(map0) {
-
-}

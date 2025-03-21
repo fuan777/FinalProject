@@ -13,15 +13,12 @@ def index(request):
     row, col = 100, 170
 
     gen.generate_map01(row, col)
-    #     ['empty', '#FFFAF0'],
-    #     ['border', '#000000'],
-    #     ['path', '#d71345'],
-    #     ['free', '#007d65'],
-    #     ['occupy', '#102b6a'],
     map0 = [['empty' for _ in range(col)] for _ in range(row)]
     context = {
         "map0": map0,
     }
+
+    # 车位
     all_ps = data_service.get_car_positions()
     for p in all_ps:
         for i in range(p.LU_x_coord, p.RD_x_coord + 1):
@@ -31,12 +28,16 @@ def index(request):
                 else:
                     map0[i][j] = 'free'
 
+    # 障碍物
     for i in range(65, 75):
         for j in range(40, 50):
             map0[i][j] = 'border'
     for i in range(30, 40):
         for j in range(120, 130):
             map0[i][j] = 'border'
+
+    # 入口
+    map0[50][0] = 'entry'
 
     return render(request, "map.html", context)
 
