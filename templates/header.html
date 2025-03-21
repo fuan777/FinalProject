@@ -66,6 +66,18 @@
             padding-top: 70px; /* 为内容留出页眉的高度 */
             overflow: hidden; /* 去除滚动条并禁止滚动 */
         }
+
+        .background-image {
+            background-size: cover; /* 让图片覆盖整个区域 */
+            background-position: center; /* 图片居中 */
+            background-attachment: fixed; /* 固定背景图片 */
+            position: fixed; /* 固定定位 */
+            top: 0; /* 从顶部开始 */
+            left: 0; /* 从左侧开始 */
+            width: 100vw; /* 宽度为视口宽度 */
+            height: 100vh; /* 高度为视口高度 */
+            z-index: -1; /* 确保背景在所有内容下方 */
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -80,6 +92,7 @@
             <i class="fas fa-user-circle"></i>
         </button>
     </header>
+    <img src="{% static 'home.jpg' %}" alt="My image" class="background-image">
     {% block content %}{% endblock %}
 
     {% block extra_js %}{% endblock %}

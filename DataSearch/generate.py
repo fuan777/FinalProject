@@ -11,20 +11,27 @@ def generate_map01(row=100, col=170):
 
     generate_row(positions, 10, 10, 5, 2, spot_size=(4, 7))
     generate_row(positions, 10, 70, 10, 2, spot_size=(7, 4))
-    generate_col(positions, 20, 10, 5, 4, spot_size=(4, 7))
+    generate_col(positions, 20, 10, 4, 3, spot_size=(4, 7))
+    generate_col(positions, 60, 10, 3, 3, spot_size=(4, 7))
 
     generate_row(positions, 30, 30, 5, 2, spot_size=(4, 7))
     generate_row(positions, 40, 30, 5, 2, spot_size=(4, 7))
     generate_row(positions, 50, 30, 5, 2, spot_size=(4, 7))
 
-    generate_col(positions, 60, 30, 3, 2, spot_size=(7, 4))
+    generate_col(positions, 60, 30, 4, 2, spot_size=(7, 4))
     generate_row(positions, 81, 37, 2, 2, spot_size=(4, 7))
 
-    generate_col(positions, 20, 100, 3, 2, spot_size=(7, 4))
+    generate_col(positions, 19, 100, 4, 2, spot_size=(7, 4))
 
     generate_row(positions, 55, 90, 5, 2, spot_size=(4, 7))
     generate_row(positions, 65, 90, 5, 2, spot_size=(4, 7))
     generate_row(positions, 75, 90, 5, 2, spot_size=(4, 7))
+
+    generate_row(positions, 30, 133, 3, 2, spot_size=(7, 4))
+    generate_col(positions, 39, 145, 4, 2, spot_size=(7, 4))
+
+    generate_col(positions, 56, 66, 4, 2, spot_size=(7, 4))
+
 
     # 创建数据库记录
     for pos_id, pos in enumerate(positions):

@@ -6,17 +6,7 @@
 {% block extra_css %}
     /* 背景图片样式 */
     <style>
-        .background-image {
-            background-size: cover; /* 让图片覆盖整个区域 */
-            background-position: center; /* 图片居中 */
-            background-attachment: fixed; /* 固定背景图片 */
-            position: fixed; /* 固定定位 */
-            top: 0; /* 从顶部开始 */
-            left: 0; /* 从左侧开始 */
-            width: 100vw; /* 宽度为视口宽度 */
-            height: 100vh; /* 高度为视口高度 */
-            z-index: -1; /* 确保背景在所有内容下方 */
-        }
+        
 
         /* 按钮样式 */
         .start-button {
@@ -44,7 +34,6 @@
 {% endblock %}
 
 {% block content %}
-    <img src="{% static 'home.jpg' %}" alt="My image" class="background-image">
 
     <button class="start-button" onclick="window.location.href='/map'">Start Parking</button>
 {% endblock %}
