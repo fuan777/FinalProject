@@ -1,0 +1,193 @@
+{% extends 'header.html' %}
+{% load static %}
+
+{% block title %}Manager Page{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .container {
+            background-color: #fff; /* 便利贴的背景色 */
+            padding: 20px;
+            border-radius: 15px; /* 圆角边框 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+            width: 300px;
+            max-width: 100%;
+            border: 2px solid #ffd700; /* 金色边框 */
+            position: relative;
+            overflow: hidden;
+            margin-right: 25px;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background-color: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #fff; /* 模拟便利贴的折角 */
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+        }
+        .coordinate-input {
+            display: flex;
+            gap: 5px;
+        }
+        .coordinate-input input {
+            width: 5px;
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .coordinate-input span {
+            align-self: center;
+            padding: 0 5px;
+            color: #555;
+        }
+        .submitButton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            align-self: center;
+        }
+        .submitButton:hover {
+            background-color: #0056b3;
+        }
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .toggle-button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .toggle-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 id="page-title">添加停车位</h1>
+        <form method="post" id="form-content">
+            {% csrf_token %}
+
+            <!-- 左上角坐标 -->
+            <div class="form-group">
+                <label for="id_LU_coords">左上角坐标:</label>
+                <div class="coordinate-input">
+                    <input type="number" id="id_LU_x_coord" name="LU_x_coord" required>
+                    <span>,</span>
+                    <input type="number" id="id_LU_y_coord" name="LU_y_coord" required>
+                </div>
+            </div>
+
+            <!-- 右下角坐标 -->
+            <div class="form-group">
+                <label for="id_RD_coords">右下角坐标:</label>
+                <div class="coordinate-input">
+                    <input type="number" id="id_RD_x_coord" name="RD_x_coord" required>
+                    <span>,</span>
+                    <input type="number" id="id_RD_y_coord" name="RD_y_coord" required>
+                </div>
+            </div>
+
+            <button type="submit" class="submitButton">提交</button>
+        </form>
+
+        <!-- 切换按钮 -->
+        <div class="toggle-container">
+            <button class="toggle-button" onclick="switchPage('add')">添加</button>
+            <button class="toggle-button" onclick="switchPage('del')">删除</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // 全局变量，用于跟踪当前页面状态
+        let currentPage = 'add';  // 默认为 'add' 页面
+
+        function switchPage(page) {
+            const pageTitle = document.getElementById('page-title');
+            const formContent = document.getElementById('form-content');
+
+            // 检查是否需要切换页面
+            if (currentPage === page) {
+                console.log("已经在当前页面，无需切换");
+                return;  // 如果已经在当前页面，直接返回
+            }
+
+            // 更新页面内容
+            if (page === 'add') {
+                pageTitle.innerText = '添加停车位';
+                formContent.innerHTML = `
+                    <form method="post" action="/manager/add/">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_LU_coords">左上角坐标:</label>
+                            <div class="coordinate-input">
+                                <input type="number" id="id_LU_x_coord" name="LU_x_coord" required>
+                                <span>,</span>
+                                <input type="number" id="id_LU_y_coord" name="LU_y_coord" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_RD_coords">右下角坐标:</label>
+                            <div class="coordinate-input">
+                                <input type="number" id="id_RD_x_coord" name="RD_x_coord" required>
+                                <span>,</span>
+                                <input type="number" id="id_RD_y_coord" name="RD_y_coord" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="submitButton">提交</button>
+                    </form>
+                `;
+                window.history.replaceState({}, '', '/manager/add/');
+            } else if (page === 'del') {
+                pageTitle.innerText = '删除停车位';
+                formContent.innerHTML = `
+                    <form method="post" action="/manager/del/">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_pos_id">停车位编号:</label>
+                            <input type="number" id="id_pos_id" name="pos_id" required>
+                        </div>
+                        <button type="submit" class="submitButton">删除</button>
+                    </form>
+                `;
+                window.history.replaceState({}, '', '/manager/del/');
+            }
+
+            // 更新当前页面状态
+            currentPage = page;
+        }
+    </script>
+{% endblock %}

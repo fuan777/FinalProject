@@ -1,0 +1,10 @@
+GET http://localhost:8000/admin/
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+cookie:
+
+<> 2025-02-14T222458.200.html
+
+###
+

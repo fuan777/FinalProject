@@ -1,0 +1,50 @@
+{% extends 'header.html' %}
+{% load static %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block extra_css %}
+    /* 背景图片样式 */
+    <style>
+        .background-image {
+            background-size: cover; /* 让图片覆盖整个区域 */
+            background-position: center; /* 图片居中 */
+            background-attachment: fixed; /* 固定背景图片 */
+            position: fixed; /* 固定定位 */
+            top: 0; /* 从顶部开始 */
+            left: 0; /* 从左侧开始 */
+            width: 100vw; /* 宽度为视口宽度 */
+            height: 100vh; /* 高度为视口高度 */
+            z-index: -1; /* 确保背景在所有内容下方 */
+        }
+
+        /* 按钮样式 */
+        .start-button {
+            position: absolute;
+            top: 50%; /* 垂直居中 */
+            left: 50%; /* 水平居中 */
+            transform: translate(-50%, -50%); /* 精确居中 */
+            padding: 30px 60px; /* 增大内边距，使按钮更大 */
+            font-size: 32px; /* 增大字体大小 */
+            color: white; /* 文字颜色 */
+            background: linear-gradient(to right, #1f1314, #b67572); /* 紫色渐变 */
+            border: none; /* 无边框 */
+            border-radius: 15px; /* 圆角 */
+            cursor: pointer; /* 鼠标指针样式 */
+            outline: none; /* 去掉轮廓线 */
+            font-family: 'Poppins', sans-serif; /* 使用 Poppins 字体 */
+            transition: transform 0.3s ease; /* 添加动画效果 */
+        }
+
+        /* 鼠标悬停时轻微放大 */
+        .start-button:hover {
+            transform: translate(-50%, -50%) scale(1.05); /* 轻微放大 */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <img src="{% static 'home.jpg' %}" alt="My image" class="background-image">
+
+    <button class="start-button" onclick="window.location.href='/map'">Start Parking</button>
+{% endblock %}
