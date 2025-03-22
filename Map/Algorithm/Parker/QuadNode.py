@@ -1,16 +1,19 @@
 import copy
+import pickle
 import random
 import threading
-from multiprocessing.pool import ThreadPool
+
+from pathlib import Path
 from typing import List, Tuple
 
 from Map.constant import *
 
 '''缓存在程序中'''
-quad_nodes = []
-quad_map = dict()
+
 
 class QuadNode:
+    _STORAGE_PATH = Path(__file__).parent / "quad_data.pkl"
+
     def __init__(self, cells):
         self.cells = copy.deepcopy(cells)
         self.cells = sorted(self.cells)
@@ -27,6 +30,7 @@ class QuadNode:
     def __eq__(self, other):
         return isinstance(other, QuadNode) and self.cells == other.cells
 
+
     def is_close(self, other):
         cell_set = set(self.cells)
         for cell in other.cells:
@@ -39,13 +43,35 @@ class QuadNode:
     def is_vertical(self):
         return self.cells[0][1] == self.cells[1][1] and self.cells[1][1] == self.cells[2][1] and self.cells[2][1] == self.cells[3][1]
 
+    @classmethod
+    def save_to_file(cls, qnodes, qmap):
+        """压缩存储节点数据"""
+        with open(cls._STORAGE_PATH, 'wb') as f:
+            pickle.dump({'nodes': qnodes, 'map': qmap}, f)
+
+    @classmethod
+    def load_from_file(cls):
+        """从文件加载节点数据"""
+        try:
+            with open(cls._STORAGE_PATH, 'rb') as f:
+                data = pickle.load(f)
+                return data['nodes'], data['map']
+        except FileNotFoundError:
+            return None, None
+
+    @classmethod
+    def data_exists(cls):
+        """检查数据文件是否存在"""
+        return cls._STORAGE_PATH.exists()
 
 def get_all_quad_nodes():
-    global quad_nodes, quad_map
-
-    if len(quad_nodes) > 0:
+    if QuadNode.data_exists():
+        quad_nodes, quad_map = QuadNode.load_from_file()
         return quad_map, quad_nodes
 
+    quad_nodes = []
+    quad_map = dict()
+    # 建节点
     for x in range(TEST_MAP_ROWS):
         for y in range(TEST_MAP_COLS):
             cells_set = [*node_search(x, y, -1), *node_search(x, y, 1)]
@@ -110,21 +136,25 @@ def get_all_quad_nodes():
                                   (node0.cells[3][0] + 1, node0.cells[3][1])])
                 if quad_map.get(node1):
                     quad_nodes[i].neighbor.append((quad_map[node1], STRAIGHT_DISTANCE))
-    # 多线程建边
-    # threads = []
-    # chuck = len(quad_nodes) // THREADS
-    # for i in range(THREADS):
-    #     left = i * chuck
-    #     right = (i + 1) * chuck if i != THREADS - 1 else len(quad_nodes)
-    #     thread = threading.Thread(target=add_edge_task, args=(left, right))
-    #     threads.append(thread)
-    #     thread.start()
-    # for thread in threads:
-    #     thread.join()
 
-    add_edge_task(0, len(quad_nodes))
+    # 多线程建边
+    threads = []
+    chuck = len(quad_nodes) // THREADS
+    for i in range(THREADS):
+        left = i * chuck
+        right = (i + 1) * chuck if i != THREADS - 1 else len(quad_nodes)
+        thread = threading.Thread(target=add_edge_task, args=(left, right))
+        threads.append(thread)
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    # 打乱边的顺序，让路径看起来更随机
     for i in range(len(quad_nodes)):
         random.shuffle(quad_nodes[i].neighbor)
+
+    #保存到文件缓存
+    QuadNode.save_to_file(quad_nodes, quad_map)
 
     return quad_map, quad_nodes
 

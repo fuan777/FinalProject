@@ -43,7 +43,6 @@ def parking_request(request):
             path = parker.find_path()
             if path:
                 for node in path:
-                    print(node.cells)
                     for x, y in node.cells:
                         if map2[x][y] != 'entry':
                             map2[x][y] = 'path'

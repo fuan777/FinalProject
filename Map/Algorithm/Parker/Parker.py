@@ -52,7 +52,7 @@ class Parker:
         found = False
         current : Union[int, None] = None
 
-        distance = [666 for i in range(len(self.quad_nodes))]
+        distance = [66666 for i in range(len(self.quad_nodes))]
         distance[self.start] = 0
         while queue and not found:
             dist, current = heapq.heappop(queue)
