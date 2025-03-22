@@ -14,7 +14,7 @@ from typing import Dict, Tuple, Union
 import copy
 import random
 
-from Map.Algorithm.Finder.finder import Finder
+from Map.Algorithm.Finder.Finder import Finder
 
 map0 = []
 errJsonResponse = {
@@ -35,13 +35,11 @@ errJsonResponse = {
 # Create your views here.
 def index(request):
     global map0
+    # 第一次生成地图
+    # gen.generate_map01(row, col)
 
     row, col = 100, 170
     map0 = [['empty' for _ in range(col)] for _ in range(row)]
-    # gen.generate_map01(row, col)
-    context = {
-        "map0": map0,
-    }
 
     # 车位
     all_ps = data_service.get_car_positions()
@@ -65,7 +63,7 @@ def index(request):
     for i in range(48, 53):
         map0[i][0] = 'entry'
 
-    return render(request, "map.html", context)
+    return render(request, "map.html", {"map0": map0})
 
 
 @csrf_exempt
@@ -95,8 +93,6 @@ def parking_request(request):
 
 
 
-# 在文件顶部添加导入
-
 @csrf_exempt
 def finding_request(request):
     global map0, errJsonResponse
@@ -109,7 +105,7 @@ def finding_request(request):
             path = finder.find_path()
             if path:
                 for x, y in path:
-                    if map2[x][y] != 'entry':
+                    if map2[x][y] != 'entry' and finder.inside(x, y) != True:
                         map2[x][y] = 'path'
             else:
                 return errJsonResponse['未找到可行路径']
