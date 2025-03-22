@@ -166,7 +166,7 @@
                             document.body.appendChild(msg);
 
                             // 按钮事件绑定
-                            // 修改按钮事件处理
+                            // parking按钮
                             msg.querySelector('.park-btn').onclick = () => {
                                 document.getElementById('exitBtn').style.display = 'block';
                                 fetch('/map/parking/', {
@@ -187,6 +187,7 @@
                                 msg.remove();
                             };
                             
+                            // finding按钮
                             msg.querySelector('.find-btn').onclick = () => {
                                 document.getElementById('exitBtn').style.display = 'block';
                                 fetch('/map/finding/', {
@@ -206,7 +207,7 @@
                                 msg.remove();
                             };
                             
-                            // 添加退出按钮事件
+                            // reset按钮，退出导航模式
                             document.getElementById('exitBtn').onclick = () => {
                                 document.getElementById('exitBtn').style.display = 'none';  // 立即隐藏
                                 fetch('/map/reset/', {
@@ -225,13 +226,11 @@
                         });
                     }
                     
-                    // 必须先将元素加入DOM再绑定事件
-                    container.appendChild(div);  // 此句必须放在条件判断之后
+                    container.appendChild(div);
 
                     coord.y += 1
                 });
-                coord.x += 1
-                coord.y = 0
+                coord = {x:coord.x+1,y:0}
             });
         }
         
