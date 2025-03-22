@@ -1,0 +1,80 @@
+/* 地图布局、网格样式等 */
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(170, 7px);
+    padding: 1px;
+    margin-right: 340px;
+}
+
+.grid-item {
+    overflow: visible;
+    width: 7px;
+    height: 7px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+
+
+.render-dot {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ff7b00;  /* 橙色 */
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.render-dot:hover {
+    transform: scale(1.2);
+    background: #ff9500;  /* 鼠标悬停时更亮 */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.render-dot.active {
+    transform: scale(2);  /* 放大效果 */
+    background: #ff6700;  /* 放大后的颜色 */
+    animation: pulse 1s infinite;  /* 增加脉动动画 */
+}
+
+/* 高亮动画 */
+@keyframes highlight {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); box-shadow: 0 0 10px yellow; }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(2);
+        box-shadow: 0 0 15px 10px rgba(250, 192, 21, 0.8);
+    }
+    50% {
+        transform: scale(2.2);
+        box-shadow: 0 0 20px 15px rgba(250, 192, 21, 0.9);
+    }
+    100% {
+        transform: scale(2);
+        box-shadow: 0 0 15px 10px rgba(250, 192, 21, 0.8);
+    }
+}
+
+.grid-item.highlight {
+    background-color: rgba(250, 192, 21, 0.5);  /* 增加半透明的背景色 */
+    border: 3px solid #facc15;  /* 高亮格子的边框颜色 */
+    box-shadow: 0 0 10px #facc15;  /* 强化的阴影效果 */
+    z-index: 2000;
+    transition: all 0.3s ease;
+}
+
+.grid-item.highlight:hover {
+    background-color: rgba(250, 192, 21, 0.7);  /* 增加 hover 时的背景色 */
+    box-shadow: 0 0 25px 15px #facc15;
+    transform: scale(3, 1.7);
+}

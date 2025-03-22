@@ -1,0 +1,57 @@
+/* 侧边栏、日志面板 */
+
+.sidebar {
+    position: fixed;
+    right: 20px;
+    top: 130px;
+    bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1000;
+    width: 340px;
+}
+
+.exit-btn {
+    display: none;
+    order: -1;
+    padding: 12px 24px;
+    background: #1f1314;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.3s;
+}
+
+.exit-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+}
+
+.log-panel {
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.9);
+    color: #0f0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Courier New', monospace;
+    position: relative;  /* 确保日志面板内容不会影响页面 */
+}
+
+
+.log-entry {
+    margin: 8px 0;
+    padding: 8px;
+    border-bottom: 1px solid #333;
+}
+
+.log-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    gap: 8px;
+}

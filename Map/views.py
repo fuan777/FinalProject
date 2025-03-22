@@ -1,13 +1,12 @@
-import logging
+import copy
 
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-import copy
-
 from Map.Algorithm.Finder.Finder import Finder
-from Map.Algorithm.Parker.Parker import Parker
-from Map.Algorithm.Gener import Gener
+from Map.Algorithm.Parker.parker import Parker
+from Map.Algorithm.MapGener import MapGener
+
 from constant import *
 
 '''全局唯一map地图'''
@@ -16,16 +15,16 @@ map0 = []
 def index(request):
     global map0
     map0 = [['empty' for _ in range(MAP_COLS)] for _ in range(MAP_ROWS)]
-    gener = Gener(map0)
+    gen = MapGener(map0)
     # 随机地图
-    gener.gen_random()
+    gen.gen_random()
     # 车位
-    gener.set_car_pos()
+    gen.set_car_pos()
     # 障碍物
-    gener.set_border(65, 75, 40, 50)
-    gener.set_border(30, 40, 120, 130)
+    gen.set_border(65, 75, 40, 50)
+    gen.set_border(30, 40, 120, 130)
     # 入口
-    gener.set_entry(48, 52, 0, 1)
+    gen.set_entry(48, 52, 0, 1)
 
     return render(request, "map.html", {"map0": map0})
 
@@ -41,14 +40,6 @@ def parking_request(request):
             if path:
                 last = path[0]
                 for node in path:
-                    is_straight = False
-                    if last != node and last.is_vertical() and node.is_vertical():
-                        is_straight = True
-                    if last != node and node.is_horizontal() and node.is_horizontal():
-                        is_straight = True
-                    last = node
-
-                    logging.getLogger('django').warning("cells: %s %s %s", node.cells, node.dir, is_straight)
                     for x, y in node.cells:
                         if map2[x][y] != 'entry':
                             map2[x][y] = 'path'
@@ -58,6 +49,7 @@ def parking_request(request):
             return JsonResponse({
                 'status': 'success',
                 'map': map2,
+                'path': [[cell for cell in node.cells] for node in path],
                 'message': '路径规划成功'
             })
         except Exception as e:

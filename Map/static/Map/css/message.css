@@ -1,0 +1,86 @@
+/* 信息框 弹窗 */
+
+.parking-message {
+    position: absolute;
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 140px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #eee;
+    margin-top: 8px;
+}
+
+.parking-message p {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.parking-message button {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+}
+
+.parking-message button:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+.parking-message .park-btn {
+    color: #c2410c;
+    border-color: #fed7aa;
+}
+
+.parking-message .find-btn {
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.error-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;  /* 深色背景 */
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);  /* 现代阴影 */
+    z-index: 1000;
+    width: 300px;  /* 宽度适中 */
+    text-align: center;
+}
+
+.error-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.error-btn {
+    background-color: #ff4747;  /* 红色按钮 */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.error-btn:hover {
+    background-color: #ff1f1f;  /* 鼠标悬停时更深的红色 */
+}
+
