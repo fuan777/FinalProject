@@ -1,4 +1,5 @@
 import copy
+import heapq
 from typing import List, Union, Dict
 
 import DataSearch.service as data_service
@@ -42,45 +43,48 @@ class Parker:
         print("Parker init done")
 
 
-    def bfs(self, end) -> Union[List[QuadNode], None]:
+    def dijkstra(self, end) -> (Union[List[QuadNode], None], int):
         if end is None:
             return None
         path : List[QuadNode] = []
-        queue = [self.start]
+        queue = [(0, self.start)]
         visited : Dict[int, Union[int, None]] = {self.start: None}
         found = False
         current : Union[int, None] = None
 
+        distance = [666 for i in range(len(self.quad_nodes))]
+        distance[self.start] = 0
         while queue and not found:
-            current = queue.pop(0)
+            dist, current = heapq.heappop(queue)
             # 到达目标点
             if current == end:
                 found = True
                 break
-            for neighbor in self.quad_nodes[current].neighbor:
-                if self.quad_nodes[neighbor].is_valid and neighbor not in visited:
+            for neighbor, weight in self.quad_nodes[current].neighbor:
+                if (dist + weight < distance[neighbor]
+                        and self.quad_nodes[neighbor].is_valid
+                        and neighbor not in visited):
                     visited[neighbor] = current
-                    queue.append(neighbor)
+                    heapq.heappush(queue, (dist + weight, neighbor))
+
         if found:
             while current:
                 path.append(self.quad_nodes[current])
                 current = visited[current]
             path.reverse()
-            return path
+            return path, distance[end]
 
-        return None
+        return None, distance[end]
 
 
     def find_path(self) -> Union[List[QuadNode], None]:
-        all_path = []
+        path, dist = None, 0
         for end in self.end:
-            all_path.append(self.bfs(end))
-
-        path = None
-        for p in all_path:
-            if p is not None:
-                if path is None or len(p) < len(path):
-                    path = p
+            now_path, now_dist = self.dijkstra(end)
+            if now_path is None:
+                continue
+            if path is None or now_dist < dist:
+                path, dist = now_path, now_dist
         return path
 
 

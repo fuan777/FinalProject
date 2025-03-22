@@ -2,7 +2,7 @@ import copy
 import random
 import threading
 from multiprocessing.pool import ThreadPool
-from typing import List
+from typing import List, Tuple
 
 from Map.constant import *
 
@@ -14,7 +14,7 @@ class QuadNode:
     def __init__(self, cells):
         self.cells = copy.deepcopy(cells)
         self.cells = sorted(self.cells)
-        self.neighbor : List[int] = []
+        self.neighbor : List[Tuple[int, int]] = []
         self.is_valid = True
 
     def __hash__(self):
@@ -57,6 +57,7 @@ def get_all_quad_nodes():
 
     # 建边
     def add_edge_task(left_id, right_id):
+        # 弯道边
         for i in range(left_id, right_id):
             node0 = quad_nodes[i]
 
@@ -77,8 +78,10 @@ def get_all_quad_nodes():
                 close_node.cells[j] = (next_x, next_y)
 
                 if node0.is_close(close_node) and quad_map.get(close_node):
-                    quad_nodes[i].neighbor.append(quad_map[close_node])
+                    quad_nodes[i].neighbor.append((quad_map[close_node], CURVE_DISTANCE))
 
+
+        # 直线边
         for i in range(left_id, right_id):
             node0 = quad_nodes[i]
             if node0.is_vertical():
@@ -87,26 +90,26 @@ def get_all_quad_nodes():
                                   (node0.cells[2][0], node0.cells[2][1] - 1),
                                   (node0.cells[3][0], node0.cells[3][1] - 1)])
                 if quad_map.get(node1):
-                    quad_nodes[i].neighbor.append(quad_map[node1])
+                    quad_nodes[i].neighbor.append((quad_map[node1], STRAIGHT_DISTANCE))
                 node1 = QuadNode([(node0.cells[0][0], node0.cells[0][1] + 1),
                                   (node0.cells[1][0], node0.cells[1][1] + 1),
                                   (node0.cells[2][0], node0.cells[2][1] + 1),
                                   (node0.cells[3][0], node0.cells[3][1] + 1)])
                 if quad_map.get(node1):
-                    quad_nodes[i].neighbor.append(quad_map[node1])
+                    quad_nodes[i].neighbor.append((quad_map[node1], STRAIGHT_DISTANCE))
             if node0.is_horizontal():
                 node1 = QuadNode([(node0.cells[0][0] - 1, node0.cells[0][1]),
                                   (node0.cells[1][0] - 1, node0.cells[1][1]),
                                   (node0.cells[2][0] - 1, node0.cells[2][1]),
                                   (node0.cells[3][0] - 1, node0.cells[3][1])])
                 if quad_map.get(node1):
-                    quad_nodes[i].neighbor.append(quad_map[node1])
+                    quad_nodes[i].neighbor.append((quad_map[node1], STRAIGHT_DISTANCE))
                 node1 = QuadNode([(node0.cells[0][0] + 1, node0.cells[0][1]),
                                   (node0.cells[1][0] + 1, node0.cells[1][1]),
                                   (node0.cells[2][0] + 1, node0.cells[2][1]),
                                   (node0.cells[3][0] + 1, node0.cells[3][1])])
                 if quad_map.get(node1):
-                    quad_nodes[i].neighbor.append(quad_map[node1])
+                    quad_nodes[i].neighbor.append((quad_map[node1], STRAIGHT_DISTANCE))
     # 多线程建边
     # threads = []
     # chuck = len(quad_nodes) // THREADS

@@ -17,3 +17,9 @@ DIRECTIONS = [(-1,0), (1,0), (0,-1), (0,1)]
 DIA_DIRECTIONS = [(-1,-1), (-1,1), (1,-1), (1,1)]
 
 THREADS = 8
+
+
+#直线距离定义
+STRAIGHT_DISTANCE = 3
+#弯道距离定义
+CURVE_DISTANCE = 1
