@@ -26,12 +26,15 @@ THREADS = 8
 
 
 # 直线距离定义
-STRAIGHT_DISTANCE = 11
+STRAIGHT_DISTANCE = 8
 # 弯道距离定义
-CURVE_DISTANCE = 4
+CURVE_DISTANCE = 3
 # 距离无穷大定义
 INF_DISTANCE = 1000000000
 
 
 # 生成occupy占比
 OCCUPY_RATIO = 1
+
+# 常量是否需要更新
+CONST_NEED_UPDATE = False

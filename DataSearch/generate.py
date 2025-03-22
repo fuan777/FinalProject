@@ -23,6 +23,8 @@ def generate_map01(row=100, col=170):
     generate_row(positions, 81, 37, 2, 2, spot_size=(4, 7))
 
     generate_col(positions, 19, 100, 4, 2, spot_size=(7, 4))
+    generate_col(positions, 1, 100, 1, 2, spot_size=(7, 4))
+    generate_col(positions, 1, 106, 1, 2, spot_size=(7, 4))
 
     generate_row(positions, 55, 90, 5, 2, spot_size=(4, 7))
     generate_row(positions, 63, 90, 5, 2, spot_size=(4, 7))
@@ -31,7 +33,9 @@ def generate_map01(row=100, col=170):
     generate_row(positions, 30, 133, 3, 2, spot_size=(7, 4))
     generate_col(positions, 39, 145, 4, 2, spot_size=(7, 4))
 
-    generate_col(positions, 53, 66, 5, 2, spot_size=(7, 4))
+    generate_col(positions, 54, 66, 5, 2, spot_size=(7, 4))
+
+
 
 
     # 创建数据库记录

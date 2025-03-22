@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -15,7 +17,7 @@ def index(request):
     global map0
     map0 = [['empty' for _ in range(MAP_COLS)] for _ in range(MAP_ROWS)]
     gener = Gener(map0)
-    # 随机地图加入数据库
+    # 随机地图
     gener.gen_random()
     # 车位
     gener.set_car_pos()
@@ -37,7 +39,16 @@ def parking_request(request):
             parker = Parker(map0, [(48, 0), (49, 0), (50, 0), (51, 0)], (int(request.POST.get('x')), int(request.POST.get('y'))))
             path = parker.find_path()
             if path:
+                last = path[0]
                 for node in path:
+                    is_straight = False
+                    if last != node and last.is_vertical() and node.is_vertical():
+                        is_straight = True
+                    if last != node and node.is_horizontal() and node.is_horizontal():
+                        is_straight = True
+                    last = node
+
+                    logging.getLogger('django').warning("cells: %s %s %s", node.cells, node.dir, is_straight)
                     for x, y in node.cells:
                         if map2[x][y] != 'entry':
                             map2[x][y] = 'path'

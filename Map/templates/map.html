@@ -8,7 +8,7 @@
         .grid-container {
             display: grid;
             grid-template-columns: repeat(170, 7px);
-            background-color: #f0f0f0;
+            {#background-color: #f0f0f0;#}
             padding: 1px;
         }
 
@@ -26,7 +26,7 @@
             transform: scale(1.1);
             z-index: 1;
         }
-        
+
         /* 新增消息框样式 */
         .parking-message {
             position: absolute;
@@ -40,16 +40,16 @@
             border: 1px solid #eee;
             margin-top: 8px;  /* 增加与目标元素的间距 */
         }
-        
+
         /* 删除原箭头样式 */
-        
+
         .parking-message p {
             margin: 0 0 12px;
             font-size: 15px;
             font-weight: bold;
             /* 移除原来的 color 定义 */
         }
-        
+
         .parking-message button {
             display: block;
             width: 100%;
@@ -62,17 +62,17 @@
             transition: all 0.2s;
             font-size: 13px;  /* 从12px调整为13px */
         }
-        
+
         .parking-message button:hover {
             background: #e9ecef;
             transform: translateY(-1px);
         }
-        
+
         .parking-message .park-btn {
             color: #c2410c;
             border-color: #fed7aa;
         }
-        
+
         .parking-message .find-btn {
             color: #065f46;
             border-color: #a7f3d0;
@@ -84,7 +84,7 @@
             top: 50%;
             transform: translateY(-50%);
         }
-        
+
         .exit-btn {
             display: none;
             padding: 12px 24px;
@@ -95,7 +95,7 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .exit-btn:hover {
             background: #b91c1c;
             transform: translateY(-2px);
@@ -115,13 +115,14 @@
 {% block extra_js %}
     <script>
         // 颜色映射表
+        // 在extra_js区块的颜色映射表中
         const colorMap = new Map([
-            ['empty',  '#FFFAF0'],
-            ['border', '#454545'],
-            ['path',   '#AED6F1'],
-            ['free',   '#F7C58A'],
-            ['occupy', '#F67E08'],
-            ['entry',  '#7BE537'],
+            ['empty',  'rgba(247, 231, 162, 0.9)'],
+            ['border', 'rgb(69, 69, 69, 0.9)'],
+            ['path',   'rgba(79, 140, 194, 0.9)'],
+            ['free',   'rgb(247, 197, 138, 0.9)'],
+            ['occupy', 'rgb(227, 107, 107, 0.9)'],
+            ['entry',  'rgb(125, 166, 213, 0.9)'],
         ]);
 
         // map0是从Django模板传入的90x200二维数组
@@ -132,7 +133,7 @@
         function renderMap(mapData) {
             const container = document.getElementById('grid');
             container.innerHTML = '';
-            
+
             // 新增全局点击监听
             document.addEventListener('click', function(e) {
                 // 移除所有消息弹窗
@@ -147,7 +148,7 @@
                     div.className = 'grid-item';
                     div.style.backgroundColor = color;
                     div.setAttribute('title', '(' + coord.x + ',' + coord.y + ')');
-                    
+
                     // 修复事件绑定位置
                     if (colorPattern === 'occupy' || colorPattern === 'free') {
                         div.dataset.x = coord.x;
@@ -157,7 +158,7 @@
                             e.stopPropagation();
                             // 移除现有消息框
                             document.querySelectorAll('.parking-message').forEach(m => m.remove());
-                            
+
                             const msg = createParkingMessage(this.dataset.x, this.dataset.y);
                             // 修复定位计算（添加滚动偏移）
                             const rect = this.getBoundingClientRect();
@@ -169,6 +170,8 @@
                             // parking按钮
                             msg.querySelector('.park-btn').onclick = () => {
                                 document.getElementById('exitBtn').style.display = 'block';
+                                msg.remove();
+                                loader.style.display = 'flex'; // 显示加载提示
                                 fetch('/map/parking/', {
                                     method: 'POST',
                                     headers: {
@@ -180,16 +183,19 @@
                                 .then(response => response.json())
                                 .then(data => {
                                     if(data.status === 'success') {
-                                        console.log(data.map);
-                                        renderMap(data.map);  // 重新渲染地图
+                                        renderMap(data.map);
                                     }
+                                })
+                                .finally(() => {
+                                    loader.style.display = 'none'; // 隐藏加载提示
                                 });
-                                msg.remove();
                             };
-                            
+
                             // finding按钮
                             msg.querySelector('.find-btn').onclick = () => {
                                 document.getElementById('exitBtn').style.display = 'block';
+                                msg.remove();
+                                loader.style.display = 'flex'; // 显示加载提示
                                 fetch('/map/finding/', {
                                     method: 'POST',
                                     headers: {
@@ -201,12 +207,14 @@
                                 .then(response => response.json())
                                 .then(data => {
                                     if(data.status === 'success') {
-                                        renderMap(data.map);  // 渲染带路径的地图
+                                        renderMap(data.map);
                                     }
+                                })
+                                .finally(() => {
+                                    loader.style.display = 'none'; // 隐藏加载提示
                                 });
-                                msg.remove();
                             };
-                            
+
                             // reset按钮，退出导航模式
                             document.getElementById('exitBtn').onclick = () => {
                                 document.getElementById('exitBtn').style.display = 'none';  // 立即隐藏
@@ -225,7 +233,7 @@
                             };
                         });
                     }
-                    
+
                     container.appendChild(div);
 
                     coord.y += 1
@@ -233,7 +241,7 @@
                 coord = {x:coord.x+1,y:0}
             });
         }
-        
+
         // 在renderMap函数之后添加消息创建函数
         function createParkingMessage(x, y) {
             const msg = document.createElement('div');
@@ -247,5 +255,46 @@
             `;
             return msg;
         }
+
+        // 新增加载提示样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .loader-container {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(255, 255, 255, 0.9);
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 20px rgba(0,0,0,0.2);
+                z-index: 2000;
+                display: none;
+                align-items: center;
+            }
+            .loader {
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #3498db;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                animation: spin 1s linear infinite;
+                margin-right: 12px;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 创建加载提示元素
+        const loader = document.createElement('div');
+        loader.className = 'loader-container';
+        loader.innerHTML = `
+            <div class="loader"></div>
+            Processing...
+        `;
+        document.body.appendChild(loader);
     </script>
 {% endblock %}
