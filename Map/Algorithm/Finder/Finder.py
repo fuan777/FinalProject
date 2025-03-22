@@ -1,19 +1,17 @@
 import copy
 import random
+from typing import Dict, Tuple, Union, List
 
 import DataSearch.service as data_service
 
-from typing import Dict, Tuple, Union, List
-
+from Map.constant import *
 
 class Finder:
     def __init__(self, map0, start, end):
         # 实际赋值
         self.map0 = map0
         self.map1 = copy.deepcopy(map0)
-        self.directions = [(-1,0), (1,0), (0,-1), (0,1)]
-        self.row = len(map0)
-        self.col = len(map0[0])
+        self.directions = DIRECTIONS
 
         self.start, self.end = start, end
 
@@ -31,15 +29,15 @@ class Finder:
                 break
 
         # 处理和障碍物的距离限制
-        for x in range(self.row):
-            for y in range(self.col):
+        for x in range(MAP_ROWS):
+            for y in range(MAP_COLS):
                 if self.map1[x][y] != 'empty':
                     continue
                 for dx, dy in self.directions:
                     next_y = y + dy
                     next_x = x + dx
                     # 检查边界和可通行性
-                    if (0 <= next_x < 100 and 0 <= next_y < 170 and
+                    if (0 <= next_x < MAP_ROWS and 0 <= next_y < MAP_COLS and
                             self.map1[next_x][next_y] == 'occupy'):
                         self.map1[x][y] = 'close'
 
@@ -63,7 +61,7 @@ class Finder:
                 next_x = current[0] + dx
                 next_y = current[1] + dy
                 # 检查边界和可通行性
-                if (0 <= next_x < 100 and 0 <= next_y < 170 and
+                if (0 <= next_x < MAP_ROWS and 0 <= next_y < MAP_COLS and
                         (next_x, next_y) not in visited and
                         self.map1[next_x][next_y] in ('free', 'entry', 'empty')):
                     visited[(next_x, next_y)] = current
