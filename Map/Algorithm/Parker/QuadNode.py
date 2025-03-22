@@ -6,7 +6,7 @@ import threading
 from pathlib import Path
 from typing import List, Tuple
 
-from Map.constant import *
+from constant import *
 
 '''缓存在程序中'''
 
@@ -30,12 +30,23 @@ class QuadNode:
     def __eq__(self, other):
         return isinstance(other, QuadNode) and self.cells == other.cells
 
-
     def is_close(self, other):
         cell_set = set(self.cells)
         for cell in other.cells:
             cell_set.add(cell)
-        return len(cell_set) == 5
+        if len(cell_set) != 5:
+            return False
+
+        c1 = c2 = (0, 0)
+        for c in cell_set:
+            if c not in other.cells:
+                c1 = c
+            if c not in self.cells:
+                c2 = c
+        if abs(c1[0] - c2[0]) >= 2 or abs(c1[1] - c2[1]) >= 2:
+            return False
+        return True
+
 
     def is_horizontal(self):
         return self.cells[0][0] == self.cells[1][0] and self.cells[1][0] == self.cells[2][0] and self.cells[2][0] == self.cells[3][0]

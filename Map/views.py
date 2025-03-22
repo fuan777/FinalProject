@@ -1,17 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.db import models
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import copy
 
-from Map.Algorithm.Parker.QuadNode import QuadNode
-
 from Map.Algorithm.Finder.Finder import Finder
 from Map.Algorithm.Parker.Parker import Parker
 from Map.Algorithm.Gener import Gener
-from Map.constant import *
+from constant import *
 
 '''全局唯一map地图'''
 map0 = []
@@ -21,7 +16,7 @@ def index(request):
     map0 = [['empty' for _ in range(MAP_COLS)] for _ in range(MAP_ROWS)]
     gener = Gener(map0)
     # 随机地图加入数据库
-    # gener.gen_random()
+    gener.gen_random()
     # 车位
     gener.set_car_pos()
     # 障碍物
@@ -58,7 +53,6 @@ def parking_request(request):
             return ERR_JSON_RESPONSE['内部错误']
 
     return ERR_JSON_RESPONSE['仅支持POST请求']
-
 
 
 @csrf_exempt

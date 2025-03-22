@@ -4,7 +4,7 @@ from typing import Dict, Tuple, Union, List
 
 import DataSearch.service as data_service
 
-from Map.constant import *
+from constant import *
 
 class Finder:
     def __init__(self, map0, start, end):

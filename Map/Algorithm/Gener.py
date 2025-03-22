@@ -3,7 +3,7 @@ import copy
 import DataSearch.service as data_service
 import DataSearch.generate as gen
 
-from Map.constant import *
+from constant import *
 
 
 

@@ -3,10 +3,9 @@ import heapq
 from typing import List, Union, Dict
 
 import DataSearch.service as data_service
-from Map.Algorithm.Gener import Gener
 
 from Map.Algorithm.Parker.QuadNode import get_all_quad_nodes, QuadNode
-from Map.constant import *
+from constant import *
 
 
 class Parker:
@@ -16,8 +15,8 @@ class Parker:
         self.carPos = None
         # 获取所有四元节点
         self.quad_map, self.quad_nodes = get_all_quad_nodes()
-        self.start = self.quad_map[QuadNode(entry)]
 
+        self.start = self.quad_map[QuadNode(entry)]
         self.end : List[Union[int, None]] = [None, None]
         self.find_end(target)
         # 处理和障碍物的距离限制
@@ -30,7 +29,7 @@ class Parker:
                     next_x = x + dx
                     # 检查边界和可通行性
                     if (0 <= next_x < MAP_ROWS and 0 <= next_y < MAP_COLS and
-                            self.map1[next_x][next_y] == 'occupy'):
+                            self.map1[next_x][next_y] in ('occupy', 'border')):
                         self.map1[x][y] = 'close'
 
         for i in range(len(self.quad_nodes)):
@@ -52,10 +51,11 @@ class Parker:
         found = False
         current : Union[int, None] = None
 
-        distance = [66666 for i in range(len(self.quad_nodes))]
-        distance[self.start] = 0
+        distance = [INF_DISTANCE for i in range(len(self.quad_nodes))]
+
         while queue and not found:
             dist, current = heapq.heappop(queue)
+            distance[current] = dist
             # 到达目标点
             if current == end:
                 found = True
@@ -78,12 +78,15 @@ class Parker:
 
 
     def find_path(self) -> Union[List[QuadNode], None]:
-        path, dist = None, 0
+        path, dist = None, INF_DISTANCE
         for end in self.end:
             now_path, now_dist = self.dijkstra(end)
-            if now_path is None:
-                continue
-            if path is None or now_dist < dist:
+
+            print("DIS: ", now_dist)
+            # for node in now_path:
+            #     print(node.cells)
+
+            if now_path is not None and now_dist < dist:
                 path, dist = now_path, now_dist
         return path
 
