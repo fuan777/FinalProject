@@ -1,2 +1,6 @@
 .idea
 .venv
+.env
+.DS_Store
+.pytest_cache
+FinalProject/local_settings.py

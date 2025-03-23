@@ -3,7 +3,7 @@ import copy
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from Map.Algorithm.Finder.Finder import Finder
+from Map.Algorithm.Finder.finder import Finder
 from Map.Algorithm.Parker.parker import Parker
 from Map.Algorithm.MapGener import MapGener
 
@@ -69,7 +69,7 @@ def finding_request(request):
             path = finder.find_path()
             if path:
                 for x, y in path:
-                    if map2[x][y] != 'entry' and finder.inside(x, y) != True:
+                    if map2[x][y] != 'entry' and finder.is_inside(x, y) != True:
                         map2[x][y] = 'path'
             else:
                 return ERR_JSON_RESPONSE['未找到可行路径']

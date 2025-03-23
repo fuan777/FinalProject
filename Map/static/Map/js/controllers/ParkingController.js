@@ -64,8 +64,6 @@ export class ParkingController {
         }else {
             showErrorMessage(data.message);
         }
-
-
         this.loader.hide();
         this.exitBtn.style.display = 'block';
 

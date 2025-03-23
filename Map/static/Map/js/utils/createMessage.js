@@ -10,6 +10,12 @@ export function createParkingMessage(status, { x, y }, handlers) {
     msg.querySelector('.park-btn').onclick = handlers.onPark;
     msg.querySelector('.find-btn').onclick = handlers.onFind;
 
+    document.addEventListener('click', function(event) {
+        if (event.target !== msg && !msg.contains(event.target)) {
+            msg.remove();
+        }
+    });
+
     document.body.appendChild(msg);
     return msg;
 }

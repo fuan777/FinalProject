@@ -1,3 +1,4 @@
+
 export const logManager = {
     panel: document.querySelector('.log-panel'),
 
